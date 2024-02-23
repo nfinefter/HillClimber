@@ -82,7 +82,7 @@ namespace DrawingHillClimber
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            //Point 1 is one point, point 2 is 2nd point line connects points
             spriteBatch.DrawLine(,);
 
             base.Draw(gameTime);
