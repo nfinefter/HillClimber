@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HillClimber", "HillClimber\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slope", "Slope\Slope.csproj", "{6B395D0F-C2C3-45C6-93E4-CF8A267B91BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawingHillClimber", "DrawingHillClimber\DrawingHillClimber.csproj", "{13FD8068-2145-49AC-8D7D-127D2C5CA699}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6B395D0F-C2C3-45C6-93E4-CF8A267B91BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B395D0F-C2C3-45C6-93E4-CF8A267B91BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B395D0F-C2C3-45C6-93E4-CF8A267B91BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13FD8068-2145-49AC-8D7D-127D2C5CA699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13FD8068-2145-49AC-8D7D-127D2C5CA699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13FD8068-2145-49AC-8D7D-127D2C5CA699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13FD8068-2145-49AC-8D7D-127D2C5CA699}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
