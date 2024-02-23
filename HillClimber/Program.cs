@@ -7,7 +7,7 @@ namespace HillClimber
         public static StringBuilder RandomizeString(int length)
         {
             StringBuilder randomString = new StringBuilder();
-            Random rand = new Random();
+            Random rand = Random.Shared;
 
             for (int i = 0; i < length; i++)
             {
@@ -29,7 +29,7 @@ namespace HillClimber
        
         public static void Mutate(StringBuilder randomString, string targetString)
         {
-            Random rand = new Random();
+            Random rand = Random.Shared;
             if (rand.Next(0, 2) == 0)
             {
                 randomString[rand.Next(0, randomString.Length)]++;
@@ -45,6 +45,7 @@ namespace HillClimber
             float error = 0;
 
             Console.WriteLine("Give a Target String");
+
             string targetString = Console.ReadLine();
 
             StringBuilder randomString = RandomizeString(targetString.Length);
@@ -59,8 +60,7 @@ namespace HillClimber
 
                 if (error < newError)
                 {
-                    randomString.Clear();
-                    randomString.Append(temp);
+                    randomString = new StringBuilder(temp);
                 }
                 else
                 {
