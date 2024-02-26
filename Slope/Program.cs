@@ -15,15 +15,15 @@ namespace Slope
             return new Vector2(slope, b);
 
         }
-        public static List<Point> PointGen(int pointCount, Vector2 line)
+        public static List<Vector2> PointGen(int pointCount, Vector2 line)
         {
-            List<Point> list = new List<Point>();
+            List<Vector2> list = new List<Vector2>();
 
             for (int i = 0; i < pointCount; i++)
             {
                 int y = (int)((line.X * i) + line.Y);
 
-                list.Add(new Point(Random.Shared.Next(i - 5, i + 5), Random.Shared.Next(y - 5, y + 5)));
+                list.Add(new Vector2(Random.Shared.Next(i - 5, i + 5), Random.Shared.Next(y - 5, y + 5)));
             }
             return list;
         }
@@ -54,11 +54,11 @@ namespace Slope
             }
             return curr;
         }
-        public static float ErrorCalc(Vector2 curr, List<Point> points)
+        public static float ErrorCalc(Vector2 curr, List<Vector2> points)
         {
             float error = 0;
 
-            List<Point> Points = PointGen(points.Count, curr);
+            List<Vector2> Points = PointGen(points.Count, curr);
 
             for (int i = 0; i < Points.Count; i++)
             {
@@ -77,7 +77,7 @@ namespace Slope
             int pointCount = int.Parse(Console.ReadLine()!);
 
             Vector2 line = LineGen();
-            List<Point> points = PointGen(pointCount, line);
+            List<Vector2> points = PointGen(pointCount, line);
 
             Vector2 curr = new Vector2();
 
