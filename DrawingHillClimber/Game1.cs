@@ -109,7 +109,7 @@ namespace DrawingHillClimber
 
             for (int i = 0; i < Points.Count; i++)
             {
-                spriteBatch.DrawPoint(Points[i], Color.Black, 50);
+                spriteBatch.DrawPoint(Points[i], Color.Black, 10);
             }
 
             base.Draw(gameTime);
