@@ -4,13 +4,15 @@ namespace Slope
 {
     public class Program
     {
+        const int PointVariation = 0;
+        public static List<Vector2> Points = new List<Vector2>();
+        public static Random rand = new Random(0);
         public static Vector2 LineGen()
         {
-            Random rand = Random.Shared;
 
-            float slope = rand.NextSingle() * 2 - 1;
+            float slope = rand.NextSingle() * 2 - 1 ;
 
-            float b = rand.Next(-101, 101);
+            float b = rand.Next(-10, 10);
 
             return new Vector2(slope, b);
 
@@ -23,33 +25,35 @@ namespace Slope
             {
                 int y = (int)((line.X * i) + line.Y);
 
-                list.Add(new Vector2(Random.Shared.Next(i - 5, i + 5), Random.Shared.Next(y - 5, y + 5)));
+                list.Add(new Vector2(Random.Shared.Next(i - PointVariation, i + PointVariation), Random.Shared.Next(y - PointVariation, y + PointVariation)));
             }
             return list;
         }
         public static Vector2 Mutate(Vector2 curr)
         {
 
-            if (Random.Shared.Next(0, 2) == 0)
+
+
+            if (rand.Next(0, 2) == 0)
             {
-                if (Random.Shared.Next(0, 2) == 0)
+                if (rand.Next(0, 2) == 0)
                 {
-                    curr.X++;
+                    curr.X+= 0.01f;
                 }
                 else
                 {
-                    curr.X--;
+                    curr.X-= 0.01f;
                 }
             }
             else
             {
-                if (Random.Shared.Next(0, 2) == 0)
+                if (rand.Next(0, 2) == 0)
                 {
-                    curr.Y++;
+                    curr.Y+= 0.02f;
                 }
                 else
                 {
-                    curr.Y--;
+                    curr.Y-= 0.02f;
                 }
             }
             return curr;
@@ -58,13 +62,11 @@ namespace Slope
         {
             float error = 0;
 
-            List<Vector2> Points = PointGen(points.Count, curr);
-
-            for (int i = 0; i < Points.Count; i++)
+            for (int i = 0; i < points.Count; i++)
             {
-                float y = curr.X * Points[i].X + curr.Y;
+                float y = curr.X * points[i].X + curr.Y;
 
-                error += Math.Abs(Points[i].Y - y);
+                error += MathF.Pow(points[i].Y - y, 2);
             }
 
             return error;
@@ -77,16 +79,16 @@ namespace Slope
             int pointCount = int.Parse(Console.ReadLine()!);
 
             Vector2 line = LineGen();
-            List<Vector2> points = PointGen(pointCount, line);
+            Points = PointGen(pointCount, line);
 
             Vector2 curr = new Vector2();
 
-            float error = ErrorCalc(curr, points);
+            float error = ErrorCalc(curr, Points);
 
             while (curr != line)
             {
                 Vector2 temp = Mutate(curr);
-                float newError = ErrorCalc(curr, points);
+                float newError = ErrorCalc(curr, Points);
 
                 if (error < newError)
                 {
