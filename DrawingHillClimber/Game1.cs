@@ -113,7 +113,7 @@ namespace DrawingHillClimber
 
             Error = ErrorCalc(Curr, Points);
 
-            if (Curr != Line && TryCounter <= 1500)
+            if (Curr != Line && TryCounter <= 5000)
             {
                 Vector2 temp = Mutate(Curr);
                 float newError = ErrorCalc(temp, Points);

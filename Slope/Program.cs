@@ -6,7 +6,7 @@ namespace Slope
     {
         const int PointVariation = 0;
         public static List<Vector2> Points = new List<Vector2>();
-        public static Random rand = new Random(0);
+        public static Random rand = new Random();
         public static Vector2 LineGen()
         {
 
