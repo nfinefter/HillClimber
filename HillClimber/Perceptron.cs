@@ -74,7 +74,18 @@ namespace HillClimber
         public double GetError(double[][] inputs, double[] desiredOutputs)
         { /*computes the output using the inputs returns the average error between each output row and each desired output row using errorFunc*/
 
+            double[] output = Compute(inputs);
 
+            double error = 0;
+
+            for (int i = 0; i < output.Length; i++)
+            {
+                //How to do MSE?
+                //error += errorFunc.Invoke();
+            }
+            error /= output.Length;
+
+            return error;
 
         }
 
