@@ -4,19 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace HillClimber
 {
     public class Perceptron
     {
         double[] weights;
         double bias;
-        double mutationAmount;
+
+        private double mut;
+        double mutationAmount
+        {
+            get
+            {
+                return mut;
+            }
+            set
+            {
+                mut = value;
+            }
+        }
         Random random;
         Func<double, double, double> errorFunc;
 
         public Perceptron(double[] initialWeightValues, double initialBiasValue, double mutationAmount, Random random, Func<double, double, double> errorFunc)
-        { /*initializes the weights array and bias*/
-
+        { /*initializes the weights array and bias*/            
             weights = initialWeightValues;
             bias = initialBiasValue;
             this.mutationAmount = mutationAmount;
@@ -31,7 +43,24 @@ namespace HillClimber
             this.random = random;
             this.errorFunc = errorFunc;
         }
-        public void Randomize(Random random, double min, double max)
+        public (int, double) Mutate()
+        {
+            var temp = random.Next(0, weights.Length + 1);
+            
+            var currentMutationAmount = mutationAmount * (random.Next(2) * 2 - 1);
+
+            if (temp == weights.Length)
+            {
+                bias += currentMutationAmount;
+            }
+            else
+            {
+                weights[temp] += currentMutationAmount;
+            }
+
+            return (temp, currentMutationAmount);
+        }
+        public void Randomize(double min, double max)
         { /*Randomly generates values for every weight including the bias*/
 
             for (int i = 0; i < weights.Length; i++)
@@ -74,15 +103,45 @@ namespace HillClimber
         public double GetError(double[][] inputs, double[] desiredOutputs)
         { /*computes the output using the inputs returns the average error between each output row and each desired output row using errorFunc*/
 
+            double[] outputs = Compute(inputs);
 
+            double error = 0;
 
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                error += errorFunc(outputs[i], desiredOutputs[i]);
+            }
+
+            return error /= outputs.Length;
         }
 
         public double TrainWithHillClimbing(double[][] inputs, double[] desiredOutputs, double currentError)
         { /*attempts one hill climbing training iteration and returns the new current error*/
 
+            int mutationItem;
+            double mutationAmount;
 
+            (mutationItem, mutationAmount) = Mutate();
+
+            double newError = GetError(inputs, desiredOutputs);
+
+            if (newError >= currentError)
+            {
+                if(mutationItem == weights.Length)
+                {
+                    bias -= mutationAmount;
+                }
+                else
+                {
+                    weights[mutationItem] -= mutationAmount;
+                }
+                return currentError;
+            }
+
+            return newError;
 
         }
+        public static double SquaredError(double currOutput, double actualOutput) => Math.Pow(actualOutput - currOutput, 2);
+
     }
 }
