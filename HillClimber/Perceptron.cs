@@ -25,9 +25,9 @@ namespace HillClimber
             }
         }
         Random random;
-        Func<double, double, double> errorFunc;
+        ErrorFunction errorFunc;
 
-        public Perceptron(double[] initialWeightValues, double initialBiasValue, double mutationAmount, Random random, Func<double, double, double> errorFunc)
+        public Perceptron(double[] initialWeightValues, double initialBiasValue, double mutationAmount, Random random, ErrorFunction errorFunc)
         { /*initializes the weights array and bias*/            
             weights = initialWeightValues;
             bias = initialBiasValue;
@@ -35,7 +35,7 @@ namespace HillClimber
             this.random = random;
             this.errorFunc = errorFunc;
         }
-        public Perceptron(int amountOfInputs, double mutationAmount, Random random, Func<double, double, double> errorFunc)
+        public Perceptron(int amountOfInputs, double mutationAmount, Random random, ErrorFunction errorFunc)
         { /*Initializes the weights array given the amount of inputs*/
 
             weights = new double[amountOfInputs];
@@ -109,7 +109,7 @@ namespace HillClimber
 
             for (int i = 0; i < outputs.Length; i++)
             {
-                error += errorFunc(outputs[i], desiredOutputs[i]);
+                error += errorFunc.Function(outputs[i], desiredOutputs[i]);
             }
 
             return error /= outputs.Length;
@@ -143,5 +143,10 @@ namespace HillClimber
         }
         public static double SquaredError(double currOutput, double actualOutput) => Math.Pow(actualOutput - currOutput, 2);
 
+        public static double DerivativeSquaredError(double currOutput, double actualOutput) => 2 * (actualOutput - currOutput);
+
+        public static double Sigmoid(double input) => 1 / (1 + (Math.Exp(-Math.Abs(input))));
+
+        public static double DerivativeSigmoid(double input) => Sigmoid(input) * (1 - Sigmoid(input));
     }
 }

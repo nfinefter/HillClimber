@@ -70,24 +70,48 @@ namespace HillClimber
             //    Console.WriteLine(error);
             //}
 
-            Perceptron perceptron = new Perceptron(2, 0.001, Random.Shared, Perceptron.SquaredError);
+            ErrorFunction errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
+            ActivationFunction activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
+
+            Perceptron perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
 
             double[][] inputs =
-            [
-                [0, 0],
-                [0, 1],
-                [1, 0],
-                [1, 1]
-            ];
-            double[] desiredOutput = { 0, 1, 1, 1 };
+            {
+
+                new double[] { 0, 0, 0},
+                new double[] { 0, 1, 0},
+                new double[] { 1, 0, 0},
+                new double[] { 1, 1, 0},
+                new double[] { 0, 0, 1},
+                new double[] { 0, 1, 1},
+                new double[] { 1, 0, 1},
+                new double[] { 1, 1, 1}
+            };
+            double[] desiredOutput = { 0, 0, 0, 1, 0, 1, 1, 1 };
 
 
-            double error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue);
+            double error = activationFunc.Function(perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue));
 
             for (int i = 0; i < 5000; i++)
             {
-                error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
+                var output = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
+                error = activationFunc.Function(output);
+
+                //ToDo:
+                //don't use activation functoin on the error
+                //use it on the output
+
+                for (int j = 0; j < inputs.Length; j++)
+                {
+                    for (int k = 0; k < inputs[j].Length; k++)
+                    {
+                        Console.Write(inputs[k]);
+                    }
+                    Console.WriteLine($" {output}");
+                }
             }
+
+            
 
         }
     }
