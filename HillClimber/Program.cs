@@ -4,6 +4,7 @@ namespace HillClimber
 {
     internal class Program
     {
+        
         public static StringBuilder RandomizeString(int length)
         {
             StringBuilder randomString = new StringBuilder();
@@ -70,12 +71,18 @@ namespace HillClimber
             //    Console.WriteLine(error);
             //}
 
-            ErrorFunction errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
-            ActivationFunction activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
+            ErrorFunction errorFunc;
+            ActivationFunction activationFunc;
+            Perceptron perceptron;
+            double[][] inputs;
+            double[] desiredOutput;
 
-            Perceptron perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
+            errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
+            activationFunc = new ActivationFunction(Perceptron.Binary, Perceptron.DerivativeSigmoid);
 
-            double[][] inputs =
+            perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
+
+            inputs = new double[][]
             {
 
                 new double[] { 0, 0, 0},
@@ -87,31 +94,25 @@ namespace HillClimber
                 new double[] { 1, 0, 1},
                 new double[] { 1, 1, 1}
             };
-            double[] desiredOutput = { 0, 0, 0, 1, 0, 1, 1, 1 };
+            desiredOutput = new double[] { 0, 0, 0, 1, 0, 1, 1, 1 };
 
-
-            double error = activationFunc.Function(perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue));
+            double error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue);
 
             for (int i = 0; i < 5000; i++)
             {
-                var output = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
-                error = activationFunc.Function(output);
+                error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
 
-                //ToDo:
-                //don't use activation functoin on the error
-                //use it on the output
+                double[] output = perceptron.Compute(inputs);
 
                 for (int j = 0; j < inputs.Length; j++)
                 {
                     for (int k = 0; k < inputs[j].Length; k++)
                     {
-                        Console.Write(inputs[k]);
+                        Console.Write(inputs[j][k]);
                     }
-                    Console.WriteLine($" {output}");
+                    Console.WriteLine($" {activationFunc.Function(output[j])}");
                 }
             }
-
-            
 
         }
     }

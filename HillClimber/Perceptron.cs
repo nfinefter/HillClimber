@@ -9,6 +9,7 @@ namespace HillClimber
 {
     public class Perceptron
     {
+        public double LearningRate { get; set; }
         double[] weights;
         double bias;
 
@@ -25,10 +26,19 @@ namespace HillClimber
             }
         }
         Random random;
+        ActivationFunction activationFunc;
         ErrorFunction errorFunc;
 
+        public Perceptron(int amountOfInputs, double learningRate, ActivationFunction activationFunction, ErrorFunction errorFunction)
+        { /*Initializes the Perceptron*/
+
+            weights = new double[amountOfInputs];
+            LearningRate = learningRate;
+            activationFunc = activationFunction;
+            errorFunc = errorFunction;
+        }
         public Perceptron(double[] initialWeightValues, double initialBiasValue, double mutationAmount, Random random, ErrorFunction errorFunc)
-        { /*initializes the weights array and bias*/            
+        { /*initializes the weights array and bias*/
             weights = initialWeightValues;
             bias = initialBiasValue;
             this.mutationAmount = mutationAmount;
@@ -46,7 +56,7 @@ namespace HillClimber
         public (int, double) Mutate()
         {
             var temp = random.Next(0, weights.Length + 1);
-            
+
             var currentMutationAmount = mutationAmount * (random.Next(2) * 2 - 1);
 
             if (temp == weights.Length)
@@ -114,6 +124,33 @@ namespace HillClimber
 
             return error /= outputs.Length;
         }
+        public double PartialDerivative(double[] inputs, double desiredOutput, double input) => errorFunc.Derivative(Compute(inputs), desiredOutput) * activationFunc.Derivative(input) * input;
+        public double Train(double[] inputs, double desiredOutput)
+        { /*trains the perceptron using gradient descent for one iteration and returns the error */
+
+            double error = 0;
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                error += LearningRate * -PartialDerivative(inputs, desiredOutput, inputs[i]);
+            }
+
+            return error;
+        }
+
+        public double Train(double[][] inputs, double[] desiredOutput)
+        { /*batch trains the perceptron using gradient descent for one iteration and returns the error */
+            double error = 0;
+
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                for (int j = 0; j < inputs[i].Length; j++)
+                {
+                    error += Train(inputs[i], desiredOutput[i]);
+                }
+            }
+            return error;
+        }
 
         public double TrainWithHillClimbing(double[][] inputs, double[] desiredOutputs, double currentError)
         { /*attempts one hill climbing training iteration and returns the new current error*/
@@ -127,7 +164,7 @@ namespace HillClimber
 
             if (newError >= currentError)
             {
-                if(mutationItem == weights.Length)
+                if (mutationItem == weights.Length)
                 {
                     bias -= mutationAmount;
                 }
@@ -148,5 +185,7 @@ namespace HillClimber
         public static double Sigmoid(double input) => 1 / (1 + (Math.Exp(-Math.Abs(input))));
 
         public static double DerivativeSigmoid(double input) => Sigmoid(input) * (1 - Sigmoid(input));
+
+        public static double Binary(double input) => input < 0.5f ? 0 : 1;
     }
 }

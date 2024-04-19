@@ -7,6 +7,7 @@ using MonoGame.Extended;
 using Slope;
 using static Slope.Program;
 
+using HillClimber;
 using System;
 using System.Collections.Generic;
 
@@ -26,6 +27,12 @@ namespace DrawingHillClimber
         public int Multiple;
         public Vector2 Offset;
         public float Error;
+
+        ErrorFunction errorFunc;
+        ActivationFunction activationFunc;
+        Perceptron perceptron;
+        double[][] inputs;
+        double[] desiredOutput;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -91,6 +98,26 @@ namespace DrawingHillClimber
             Points = PointGen(PointCount, Line);
             (Multiple, Offset) = MapPoints(Points);
 
+           errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
+           activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
+
+            perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
+
+            inputs = new double[][]
+            {
+
+                new double[] { 0, 0, 0},
+                new double[] { 0, 1, 0},
+                new double[] { 1, 0, 0},
+                new double[] { 1, 1, 0},
+                new double[] { 0, 0, 1},
+                new double[] { 0, 1, 1},
+                new double[] { 1, 0, 1},
+                new double[] { 1, 1, 1}
+            };
+            desiredOutput = new double[]{ 0, 0, 0, 1, 0, 1, 1, 1 };
+
+
             base.Initialize();
         }
 
@@ -109,6 +136,7 @@ namespace DrawingHillClimber
             //Console.WriteLine("How many points would you like to generate?");
             //int pointCount = int.Parse(Console.ReadLine()!);             
 
+            /*HillClimber:
             Line = LineGen();
 
             Error = ErrorCalc(Curr, Points);
@@ -127,8 +155,27 @@ namespace DrawingHillClimber
                 Console.WriteLine(Error);
                 (Point1, Point2) = CoordGen(Point1, Point2);
                 TryCounter++;
-            }
+            }*/
 
+            //Perceptron:
+
+            double error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue);
+
+            for (int i = 0; i < 5000; i++)
+            {
+                error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
+                error = activationFunc.Function(error);
+
+
+                for (int j = 0; j < inputs.Length; j++)
+                {
+                    for (int k = 0; k < inputs[j].Length; k++)
+                    {
+                        Console.Write(inputs[k]);
+                    }
+                    Console.WriteLine($" {error}");
+                }
+            }
 
             // TODO: Add your update logic here
 
@@ -147,6 +194,8 @@ namespace DrawingHillClimber
             {
                 spriteBatch.DrawPoint((Points[i] - Offset) * Multiple, Color.Black, 10);
             }
+
+
 
             base.Draw(gameTime);
 
