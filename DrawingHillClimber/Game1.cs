@@ -32,7 +32,7 @@ namespace DrawingHillClimber
         ActivationFunction activationFunc;
         Perceptron perceptron;
         double[][] inputs;
-        double[] desiredOutput;
+        double[] desiredOutputs;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -98,10 +98,11 @@ namespace DrawingHillClimber
             Points = PointGen(PointCount, Line);
             (Multiple, Offset) = MapPoints(Points);
 
-           errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
-           activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
+            errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
+            activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
 
-            perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
+            perceptron = new Perceptron(3, 0.001, activationFunc, errorFunc);
+
 
             inputs = new double[][]
             {
@@ -115,7 +116,7 @@ namespace DrawingHillClimber
                 new double[] { 1, 0, 1},
                 new double[] { 1, 1, 1}
             };
-            desiredOutput = new double[]{ 0, 0, 0, 1, 0, 1, 1, 1 };
+            desiredOutputs = new double[]{ 0, 0, 0, 1, 0, 1, 1, 1 };
 
 
             base.Initialize();
@@ -159,21 +160,22 @@ namespace DrawingHillClimber
 
             //Perceptron:
 
-            double error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, int.MaxValue);
+            double error = perceptron.Train(inputs, desiredOutputs);
 
             for (int i = 0; i < 5000; i++)
             {
-                error = perceptron.TrainWithHillClimbing(inputs, desiredOutput, error);
-                error = activationFunc.Function(error);
+                error = perceptron.Train(inputs, desiredOutputs);
 
+                double[] output = perceptron.Compute(inputs);
 
                 for (int j = 0; j < inputs.Length; j++)
                 {
                     for (int k = 0; k < inputs[j].Length; k++)
                     {
-                        Console.Write(inputs[k]);
+                        Console.Write(inputs[j][k]);
                     }
-                    Console.WriteLine($" {error}");
+                    Console.WriteLine($" {perceptron.activationFunc.Function(output[j])}");
+                    
                 }
             }
 

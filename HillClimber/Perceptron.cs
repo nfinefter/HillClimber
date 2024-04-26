@@ -26,8 +26,8 @@ namespace HillClimber
             }
         }
         Random random;
-        ActivationFunction activationFunc;
-        ErrorFunction errorFunc;
+        public ActivationFunction activationFunc;
+        public ErrorFunction errorFunc;
 
         public Perceptron(int amountOfInputs, double learningRate, ActivationFunction activationFunction, ErrorFunction errorFunction)
         { /*Initializes the Perceptron*/
@@ -110,6 +110,13 @@ namespace HillClimber
             return output;
 
         }
+        public double ActivationCompute(double[] inputs)
+        {
+            //Adds activation function to the base compute function
+
+            double activationInput = Compute(inputs);
+            return activationFunc.Function(activationInput);
+        }
         public double GetError(double[][] inputs, double[] desiredOutputs)
         { /*computes the output using the inputs returns the average error between each output row and each desired output row using errorFunc*/
 
@@ -124,31 +131,51 @@ namespace HillClimber
 
             return error /= outputs.Length;
         }
-        public double PartialDerivative(double[] inputs, double desiredOutput, double input) => errorFunc.Derivative(Compute(inputs), desiredOutput) * activationFunc.Derivative(input) * input;
+        public double PartialDerivative(double[] inputs, double desiredOutput, double input) => errorFunc.Derivative(activationFunc.Function(input), desiredOutput) * activationFunc.Derivative(activationFunc.Function(Compute(inputs)));
         public double Train(double[] inputs, double desiredOutput)
         { /*trains the perceptron using gradient descent for one iteration and returns the error */
 
-            double error = 0;
+            double activationInput = ActivationCompute(inputs);
+            double output = activationFunc.Function(activationInput);
+            double error = errorFunc.Function(output, desiredOutput);
 
-            for (int i = 0; i < inputs.Length; i++)
+      
+            double weightChangeScalar = errorFunc.Derivative(output, desiredOutput) * activationFunc.Derivative(activationInput) * -LearningRate;
+
+            for (int i = 0; i < weights.Length; i++)
             {
-                error += LearningRate * -PartialDerivative(inputs, desiredOutput, inputs[i]);
+                weights[i] += weightChangeScalar * inputs[i];
             }
+            bias += weightChangeScalar;
 
             return error;
         }
 
-        public double Train(double[][] inputs, double[] desiredOutput)
+        public double Train(double[][] inputs, double[] desiredOutputs)
         { /*batch trains the perceptron using gradient descent for one iteration and returns the error */
-            double error = 0;
-
-            for (int i = 0; i < inputs.Length; i++)
+            double[] activationInputs = new double[inputs.Length];
+            double[] outputs = new double[inputs.Length];
+            for (int i = 0; i < outputs.Length; i++)
             {
-                for (int j = 0; j < inputs[i].Length; j++)
-                {
-                    error += Train(inputs[i], desiredOutput[i]);
-                }
+                double activationInput = Compute(inputs[i]);
+                activationInputs[i] = activationInput;
+                outputs[i] = activationFunc.Function(activationInput);
             }
+
+            double error = GetError(inputs, desiredOutputs);
+
+
+            for (int i = 0; i < desiredOutputs.Length; i++)
+            {
+                double weightChangeScalar = errorFunc.Derivative(outputs[i], desiredOutputs[i]) * activationFunc.Derivative(activationInputs[i]) * -LearningRate;
+
+                for (int j = 0; j < weights.Length; j++)
+                {
+                    weights[j] += weightChangeScalar * inputs[i][j];
+                }
+                bias += weightChangeScalar;
+            }
+
             return error;
         }
 
