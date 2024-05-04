@@ -106,7 +106,7 @@ namespace DrawingHillClimber
 
             //Line of Best Fit Perceptron
             perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
-            
+
             //Gradient Descent Perceptron
             //perceptron = new Perceptron(3, 0.001, activationFunc, errorFunc);
 
@@ -122,7 +122,7 @@ namespace DrawingHillClimber
                 new double[] { 1, 0, 1},
                 new double[] { 1, 1, 1}
             };
-            desiredOutputs = new double[]{ 0, 0, 0, 1, 0, 1, 1, 1 };
+            desiredOutputs = new double[] { 0, 0, 0, 1, 0, 1, 1, 1 };
 
 
             base.Initialize();
@@ -173,14 +173,16 @@ namespace DrawingHillClimber
                 error = perceptron.TrainWithHillClimbing(inputs, desiredOutputs, error);
                 error = activationFunc.Function(error);
 
+                Point1.Y = (float)perceptron.Compute([Offset.X]);
+                Point2.Y = (float)perceptron.Compute([(GraphicsDevice.Viewport.Width / Multiple) + Offset.X]);
 
                 for (int j = 0; j < inputs.Length; j++)
                 {
                     for (int k = 0; k < inputs[j].Length; k++)
                     {
-                        Console.Write(inputs[j][k]);
+                        //  Console.Write(inputs[j][k]);
                     }
-                    Console.WriteLine($" {error}");
+                    //   Console.WriteLine($" {error}");
                 }
             }
 
@@ -219,9 +221,11 @@ namespace DrawingHillClimber
 
             var dataBreadth = GraphicsDevice.Viewport.Width / Multiple;
             //Point 1 is one point, point 2 is 2nd point Line connects points
-           
+
             var yIntercept = new Vector2(0, Line.Y - Offset.Y);
             spriteBatch.DrawLine(yIntercept * Multiple, new Vector2(GraphicsDevice.Viewport.Width, (yIntercept.Y + Line.X * dataBreadth) * Multiple), Color.Red, 10);
+
+            spriteBatch.DrawLine((Point1 * Multiple) + Offset, (Point2 * Multiple) + Offset, Color.Red);
 
             for (int i = 0; i < Points.Count; i++)
             {
