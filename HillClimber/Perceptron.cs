@@ -25,7 +25,7 @@ namespace HillClimber
                 mut = value;
             }
         }
-        Random random;
+        public Random random;
         public ActivationFunction activationFunc;
         public ErrorFunction errorFunc;
 
@@ -182,15 +182,15 @@ namespace HillClimber
         public double TrainWithHillClimbing(double[][] inputs, double[] desiredOutputs, double currentError)
         { /*attempts one hill climbing training iteration and returns the new current error*/
 
+         
             int mutationItem;
             double mutationAmount;
-
             (mutationItem, mutationAmount) = Mutate();
-
             double newError = GetError(inputs, desiredOutputs);
 
             if (newError >= currentError)
             {
+                if(mutationItem == weights.Length)
                 if (mutationItem == weights.Length)
                 {
                     bias -= mutationAmount;
@@ -201,7 +201,6 @@ namespace HillClimber
                 }
                 return currentError;
             }
-
             return newError;
 
         }

@@ -98,11 +98,17 @@ namespace DrawingHillClimber
             Points = PointGen(PointCount, Line);
             (Multiple, Offset) = MapPoints(Points);
 
+
+            //CoordGen();
+
             errorFunc = new ErrorFunction(Perceptron.SquaredError, Perceptron.DerivativeSquaredError);
             activationFunc = new ActivationFunction(Perceptron.Sigmoid, Perceptron.DerivativeSigmoid);
 
-            perceptron = new Perceptron(3, 0.001, activationFunc, errorFunc);
-
+            //Line of Best Fit Perceptron
+            perceptron = new Perceptron(3, 0.001, Random.Shared, errorFunc);
+            
+            //Gradient Descent Perceptron
+            //perceptron = new Perceptron(3, 0.001, activationFunc, errorFunc);
 
             inputs = new double[][]
             {
@@ -137,36 +143,36 @@ namespace DrawingHillClimber
             //Console.WriteLine("How many points would you like to generate?");
             //int pointCount = int.Parse(Console.ReadLine()!);             
 
-            /*HillClimber:
-            Line = LineGen();
+            //HillClimber:
+            //Line = LineGen();
 
-            Error = ErrorCalc(Curr, Points);
+            //Error = ErrorCalc(Curr, Points);
 
-            if (Curr != Line && TryCounter <= 5000)
-            {
-                Vector2 temp = Mutate(Curr);
-                float newError = ErrorCalc(temp, Points);
+            //if (Curr != Line && TryCounter <= 5000)
+            //{
+            //    Vector2 temp = Mutate(Curr);
+            //    float newError = ErrorCalc(temp, Points);
 
-                if (Error > newError)
-                {
-                    Curr = temp;
-                    Error = newError;
-                }
-                Console.WriteLine($"{Curr.X}, {Curr.Y}");
-                Console.WriteLine(Error);
-                (Point1, Point2) = CoordGen(Point1, Point2);
-                TryCounter++;
-            }*/
+            //    if (Error > newError)
+            //    {
+            //        Curr = temp;
+            //        Error = newError;
+            //    }
+            //    Console.WriteLine($"{Curr.X}, {Curr.Y}");
+            //    Console.WriteLine(Error);
+            //    (Point1, Point2) = CoordGen(Point1, Point2);
+            //    TryCounter++;
+            //}
 
-            //Perceptron:
+            //Perceptron Line of Best Fit:
 
-            double error = perceptron.Train(inputs, desiredOutputs);
+            double error = perceptron.TrainWithHillClimbing(inputs, desiredOutputs, int.MaxValue);
 
             for (int i = 0; i < 5000; i++)
             {
-                error = perceptron.Train(inputs, desiredOutputs);
+                error = perceptron.TrainWithHillClimbing(inputs, desiredOutputs, error);
+                error = activationFunc.Function(error);
 
-                double[] output = perceptron.Compute(inputs);
 
                 for (int j = 0; j < inputs.Length; j++)
                 {
@@ -174,10 +180,31 @@ namespace DrawingHillClimber
                     {
                         Console.Write(inputs[j][k]);
                     }
-                    Console.WriteLine($" {perceptron.activationFunc.Function(output[j])}");
-                    
+                    Console.WriteLine($" {error}");
                 }
             }
+
+
+            //Perceptron AND/OR Gate:
+
+            //double error = perceptron.Train(inputs, desiredOutputs);
+
+            //for (int i = 0; i < 5000; i++)
+            //{
+            //    error = perceptron.Train(inputs, desiredOutputs);
+
+            //    double[] output = perceptron.Compute(inputs);
+
+            //    for (int j = 0; j < inputs.Length; j++)
+            //    {
+            //        for (int k = 0; k < inputs[j].Length; k++)
+            //        {
+            //            Console.Write(inputs[j][k]);
+            //        }
+            //        Console.WriteLine($" {perceptron.activationFunc.Function(output[j])}");
+
+            //    }
+            //}
 
             // TODO: Add your update logic here
 
@@ -189,15 +216,17 @@ namespace DrawingHillClimber
             spriteBatch.Begin();
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            var dataBreadth = GraphicsDevice.Viewport.Width / Multiple;
             //Point 1 is one point, point 2 is 2nd point Line connects points
-            spriteBatch.DrawLine((Point1 - Offset) * Multiple, Point2 - Offset, Color.Red);
+           
+            var yIntercept = new Vector2(0, Line.Y - Offset.Y);
+            spriteBatch.DrawLine(yIntercept * Multiple, new Vector2(GraphicsDevice.Viewport.Width, (yIntercept.Y + Line.X * dataBreadth) * Multiple), Color.Red, 10);
 
             for (int i = 0; i < Points.Count; i++)
             {
                 spriteBatch.DrawPoint((Points[i] - Offset) * Multiple, Color.Black, 10);
             }
-
-
 
             base.Draw(gameTime);
 
